@@ -1,0 +1,119 @@
+This is a step by step, how to install collision_detector software on Jetson Nano
+
+1. You need librealsense.
+	Following an installation from https://www.jetsonhacks.com/2019/05/16/jetson-nano-realsense-depth-camera/
+	
+	you can check the realsense is working or not, by going to /usr/local/bin and run ./realsense-viewer
+
+2. Install OpenCV
+	Following the step here https://www.pyimagesearch.com/2018/09/19/pip-install-opencv/
+	or 
+	https://www.learnopencv.com/install-opencv3-on-ubuntu/
+
+	or 
+	https://www.pyimagesearch.com/2018/05/28/ubuntu-18-04-how-to-install-opencv/
+
+	or this is quite latest
+	https://pysource.com/2019/08/26/install-opencv-4-1-on-nvidia-jetson-nano/
+
+
+
+3. Install darknet
+
+	hit this command, to make the loader see the library
+	sudo sh -c "echo '/usr/local/lib' >> /etc/ld.so.conf"
+	sudo ldconfig
+	
+	hit this export to add path of the cuda
+	export PATH=/usr/local/cuda-10.0/bin${PATH:+:${PATH}}
+	export LD_LIBRARY_PATH=/usr/local/cuda10.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+	git clone https://github.com/pjreddie/darknet.git
+	cd darkent
+	edit a Makefile
+		GPU=1
+		CUDNN=1
+		OPENCV=1
+		
+		NVCC=/usr/local/cuda-10.0/bin/nvcc	# Nano uses cuda-10.0
+
+
+		ifeq ($(GPU), 1) 
+			COMMON+= -DGPU -I/usr/local/cuda-10.0/include/
+			CFLAGS+= -DGPU
+			LDFLAGS+= -L/usr/local/cuda-10.0/lib64 -lcuda -lcudart -lcublas -lcurand
+		endif
+
+	save it, then hit make, if there is no error so it's good to go
+	check in /usr/local/include  there is darknet.h or not, if no, just go back to darknet/include and copy the header file to there
+	by hit this command sudo cp darknet.h /usr/local/include
+
+	then go check again at /usr/local/lib  to see that there is libdarknet.so or not, if not, just go back to darknet/
+	and copy it by hit this command, sudo cp libdarknet.so /usr/local/lib 
+
+4. Install collision-detector
+	
+	git clone https://github.com/mfassler/collision-detector
+
+	cd collision-detector
+	if not using Full screen, dont forget to comment out the windowsProperty in main.cpp
+	hit make
+
+5. If there is an error like cannot find libdarknet.so even copied it already when run ./alertIfTooClose, try export PATH like 4. again and hit sudo ldconfig at the end also. Then run ./alertIfTooClose again
+
+6. if want to make alertIfTooClose auto run after boot
+	add script file .sh, go to cd /etc/profile.d/  , then sudo touch autorun.sh , then edit inside the file , sudo gedit autorun.sh
+
+	ADD THIS
+
+	#!/bin/bash/
+	cd /home/nvidia/collision-detector
+	./alertIfTooClose
+
+	SAVE then close
+
+	make the file executable by hit sudo chmod +x /etc/profile.d/autorun.sh  , file will turn to green color
+	after reboot, it should autorun (should set as automatically login at first)
+
+7. In case of using alertIfTooClose and autopilot python script and want it to autorun when start
+	first we need to make a shell script (.sh) of to run each script. At /home/nvidia , we sudo touch RunCam.sh to make .sh file
+
+	edit RunCam.sh by add this
+
+	#!/bin/bash
+	cd /home/nvidia/collision-detector
+	./alertIfTooClose 127.0.0.1
+
+	SAVE and CLOSE 
+	127.0.0.1 is for NETWORK_DISPLAY editable on /home/collision-detector/Makefile
+
+	then create one more script, sudo touch RunAutopilot.sh
+
+	edit RunAutopilot.py by add this
+
+	#!/bin/bash
+	cd /home/nvidia/Autopilot
+	python3 main.py
+
+	SAVE and CLOSE
+	Autopilot is a folder depends on each project
+
+	those shell script should be at /home/nvidia
+	then hit sudo chmod +x /home/nvidia/RunCam.sh  and    sudo chmod +x /home/nvidia/RunAutopilot.sh    to make those executable
+
+	then goes to cd /etc/profile.d  and make new by sudo touch autorun.sh file
+	then edit the file by adding this
+
+	#!/bin/bash
+	cd /home/nvidia
+
+	sleep 60
+
+	sh -x RunAutopilot.sh & sh -x RunCam.sh
+
+	SAVE and CLOSE
+
+	you can see a delay 60 second, it's for booting up a wifi router, it takes some time when start.
+
+
+		
