@@ -1,11 +1,6 @@
 This is a step by step, how to install collision_detector software on Jetson Nano
 
-1. You need librealsense.
-	Following an installation from https://www.jetsonhacks.com/2019/05/16/jetson-nano-realsense-depth-camera/
-	
-	you can check the realsense is working or not, by going to /usr/local/bin and run ./realsense-viewer
-
-2. Install OpenCV
+1. Install OpenCV (~2hours)
 	Following the step here https://www.pyimagesearch.com/2018/09/19/pip-install-opencv/
 	or 
 	https://www.learnopencv.com/install-opencv3-on-ubuntu/
@@ -13,15 +8,13 @@ This is a step by step, how to install collision_detector software on Jetson Nan
 	or 
 	https://www.pyimagesearch.com/2018/05/28/ubuntu-18-04-how-to-install-opencv/
 
-	or
+	or I FOUND THIS IS THE BEST WORKS ON NANO
 	https://pysource.com/2019/08/26/install-opencv-4-1-on-nvidia-jetson-nano/
 	
 	or install from source
 	https://linuxize.com/post/how-to-install-opencv-on-ubuntu-18-04/
 
-
-
-3. Install darknet
+2. Install darknet (~5mins)
 
 	hit this command, to make the loader see the library
 	sudo sh -c "echo '/usr/local/lib' >> /etc/ld.so.conf"
@@ -54,7 +47,12 @@ This is a step by step, how to install collision_detector software on Jetson Nan
 	then go check again at /usr/local/lib  to see that there is libdarknet.so or not, if not, just go back to darknet/
 	and copy it by hit this command, sudo cp libdarknet.so /usr/local/lib 
 
-4. Install collision-detector
+3. You need librealsense. (~2hours)
+	Following an installation from https://www.jetsonhacks.com/2019/05/16/jetson-nano-realsense-depth-camera/
+	
+	you can check the realsense is working or not, by going to /usr/local/bin and run ./realsense-viewer
+
+4. Install collision-detector (~3mins)
 	
 	git clone https://github.com/mfassler/collision-detector
 
