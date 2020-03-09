@@ -13,6 +13,9 @@ This is a step by step, how to install collision_detector software on Jetson Nan
 	
 	or install from source
 	https://linuxize.com/post/how-to-install-opencv-on-ubuntu-18-04/
+	
+	
+	for my Ubuntu 16.04 laptop I need to install opencv from source and use the version of 3.3.1, and it's gonna compile 	     with pjreddie/darknet
 
 2. Install darknet (~5mins)
 
